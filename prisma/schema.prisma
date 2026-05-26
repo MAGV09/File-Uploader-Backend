@@ -8,16 +8,26 @@ datasource db {
   provider = "postgresql"
 }
 
-// model Session {
-//   id        String   @id
-//   sid       String   @unique
-//   data      String
-//   expiresAt DateTime
-// }
-// model User { 
-//   id    Int     @id @default(autoincrement()) 
-//   email String  @unique
-//   username  String @unique
-//   password String
-  
-// } 
+model Session {
+  id        String   @id
+  sid       String   @unique
+  data      String
+  expiresAt DateTime
+}
+model User { 
+  id    Int     @id @default(autoincrement()) 
+  username  String @unique
+  password String
+  files File[]
+  @@map("users")
+} 
+
+model File {
+id Int @id @default(autoincrement())
+name String @unique
+type String
+format String
+size Int
+user User @relation(fields: [userId],references: [id])
+userId Int
+}

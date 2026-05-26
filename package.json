@@ -21,7 +21,10 @@
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "format": "prettier --write .",
-    "prepare": "husky"
+    "prepare": "husky",
+    "generate": "prisma generate --watch",
+    "migrate": "prisma migrate dev",
+    "studio": "prisma studio --config ./prisma.config.js"
   },
   "dependencies": {
     "@prisma/adapter-pg": "^7.8.0",

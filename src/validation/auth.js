@@ -14,8 +14,6 @@ const signUpValidation = [
       }
     }),
 
-  body('email').trim().notEmpty().isEmail().withMessage('Invalid email'),
-
   body('password')
     .notEmpty()
     .withMessage('Password is required')

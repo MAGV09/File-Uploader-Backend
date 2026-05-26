@@ -46,7 +46,6 @@ app.use(passport.session());
 app.use('/', indexRouter);
 app.use('/auth', authRouter);
 
-//err handling
 app.use(errorHandler);
 
 const port = process.env.APP_PORT || 3000;
