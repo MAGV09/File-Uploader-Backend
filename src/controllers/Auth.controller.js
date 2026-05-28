@@ -4,7 +4,6 @@ const { matchedData } = require('express-validator');
 const passport = require('../config/passport');
 
 async function createUser(req, res) {
-  console.log(req.body);
   const { username, password } = matchedData(req);
   const hashedPassword = await bcrypt.hash(password, 10);
   await prisma.user.create({
@@ -29,7 +28,6 @@ async function handleLogin(req, res, next) {
         user: {
           id: user.id,
           username: user.username,
-          email: user.email,
         },
       });
     });

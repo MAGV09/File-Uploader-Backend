@@ -6,7 +6,7 @@ const prisma = require('./lib/prisma');
 const session = require('express-session');
 const { PrismaSessionStore } = require('@quixo3/prisma-session-store');
 const passport = require('./config/passport');
-
+const createError = require('http-errors');
 const errorHandler = require('./middleware/errorHandler');
 const indexRouter = require('./routes/index');
 const authRouter = require('./routes/auth');
@@ -46,6 +46,9 @@ app.use(passport.session());
 app.use('/', indexRouter);
 app.use('/auth', authRouter);
 
+app.use((req, res, next) => {
+  next(createError(404, `Route ${req.method} ${req.url} not found mate`));
+});
 app.use(errorHandler);
 
 const port = process.env.APP_PORT || 3000;
