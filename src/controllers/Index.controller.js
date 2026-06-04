@@ -9,8 +9,4 @@ async function getCurrentUser(req, res) {
   res.json(currentUser);
 }
 
-async function handleUpload(req, res) {
-  console.log(req.files);
-  res.json({ message: 'sucessfully uploaded' });
-}
-module.exports = { getHomepage, getCurrentUser, handleUpload };
+module.exports = { getHomepage, getCurrentUser };
