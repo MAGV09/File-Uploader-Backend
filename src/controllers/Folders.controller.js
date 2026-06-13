@@ -15,7 +15,9 @@ async function getFolder(req, res) {
 }
 
 async function createFolder(req, res) {
-  await FolderService.createFolder(req.body);
+  const { name } = req.body;
+  const { id } = req.user;
+  await FolderService.createFolder(name, id);
   res.json({ message: 'Created Successfully' });
 }
 

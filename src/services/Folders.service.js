@@ -26,7 +26,7 @@ async function deleteFolder(folderId) {
   });
 }
 
-async function createFolder({ name, userId }) {
+async function createFolder(name, userId) {
   const folder = await prisma.folder.create({
     data: {
       name,

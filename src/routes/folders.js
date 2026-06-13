@@ -1,6 +1,6 @@
 const { Router } = require('express');
 const router = Router();
-const { reqAuth } = require('../middleware/auth');
+const { requireAuth } = require('../middleware/auth');
 const {
   getFolders,
   getFolder,
@@ -8,13 +8,16 @@ const {
   updateFolder,
   deleteFolder,
 } = require('../controllers/Folders.controller');
+const filesRouter = require('./files');
 
-router.use(reqAuth);
+router.use(requireAuth);
+router.use('/:folderId/files', filesRouter);
+
 router.get('/:folderId', getFolder);
 router.post('/', createFolder);
 router.delete('/:folderId', deleteFolder);
 router.put('/:folderId', updateFolder);
-router.get('/:folderId/files');
-router.delete('/:folderId/files');
+// router.get('/:folderId/files');
+// router.delete('/:folderId/files');
 
 module.exports = router;

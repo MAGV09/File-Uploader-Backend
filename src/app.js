@@ -8,8 +8,11 @@ const { PrismaSessionStore } = require('@quixo3/prisma-session-store');
 const passport = require('./config/passport');
 const createError = require('http-errors');
 const errorHandler = require('./middleware/errorHandler');
+
 const indexRouter = require('./routes/index');
 const authRouter = require('./routes/auth');
+const foldersRouter = require('./routes/folders');
+const filesRouter = require('./routes/files');
 
 const sessionStore = new PrismaSessionStore(prisma, {
   checkPeriod: 12 * 60 * 60 * 1000,
@@ -45,6 +48,8 @@ app.use(passport.session());
 
 app.use('/', indexRouter);
 app.use('/auth', authRouter);
+app.use('/folders', foldersRouter);
+app.use('/files', filesRouter);
 
 app.use((req, res, next) => {
   next(createError(404, `Route ${req.method} ${req.url} not found mate`));

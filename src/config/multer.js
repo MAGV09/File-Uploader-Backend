@@ -1,17 +1,42 @@
 const cloudinary = require('cloudinary').v2;
 const { CloudinaryStorage } = require('multer-storage-cloudinary');
 const multer = require('multer');
+const fs = require('node:fs/promises');
 
-cloudinary.config({ secure: true });
-const storage = new CloudinaryStorage({
-  cloudinary,
-  params: {
-    folder: 'images', // folder name on Cloudinary
-    allowed_formats: ['jpg', 'png', 'webp'],
-    // transformation: [{ width: 800, crop: 'limit' }], // optional resize
+const storage = multer.diskStorage({
+  destination: async function (req, file, cb) {
+    try {
+      const uploadPath = `./public/uploads/${req.user.id}/${req.params.folderId}`;
+      await fs.mkdir(uploadPath, { recursive: true });
+      cb(null, uploadPath);
+    } catch (err) {
+      cb(err);
+    }
+  },
+  filename: function (req, file, cb) {
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
+    cb(null, file.originalname + '-' + uniqueSuffix);
   },
 });
 
-const upload = multer({ storage, limits: { fileSize: 5 * 1024 * 1024 } });
+function fileFilter(req, file, cb) {
+  const allowedTypes = ['image/jpeg', 'image/png', 'application/pdf'];
+  if (allowedTypes.includes(file.mimetype)) {
+    cb(null, true);
+  } else {
+    cb(new Error('Invalid file type'));
+  }
+}
+// cloudinary.config({ secure: true });
+// const storage = new CloudinaryStorage({
+//   cloudinary,
+//   params: {
+//     folder: 'images', // folder name on Cloudinary
+//     allowed_formats: ['jpg', 'png', 'webp'],
+//     // transformation: [{ width: 800, crop: 'limit' }], // optional resize
+//   },
+// });
+
+const upload = multer({ storage, fileFilter, limits: { fileSize: 5 * 1024 * 1024 } });
 
 module.exports = upload;

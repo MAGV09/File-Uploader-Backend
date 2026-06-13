@@ -1,35 +1,49 @@
 const FilesService = require('../services/Files.service');
+const fs = require('node:fs/promises');
+const path = require('node:path');
 
-async function getFolders(req, res) {
-  const userId = req.params.id;
-  const folders = await FilesService.getFolders(userId);
-  res.json({ folders });
+async function getFiles(req, res) {
+  const folderId = parseInt(req.params.folderId);
+  const files = await FilesService.getFiles(folderId);
+  res.json({ files });
 }
 
-async function getFolder(req, res) {
-  const folderId = req.params.folderId;
-  const folder = await FilesService.getFolder(folderId);
+async function getFile(req, res) {
+  const fileId = parseInt(req.params.fileId);
+  const file = await FilesService.getFile(fileId);
   res.json({
-    folder,
+    file,
   });
 }
 
-async function createFolder(req, res) {
-  await FilesService.createFolder(req.body);
-  res.json({ message: 'Created Successfully' });
+async function createFile(req, res) {
+  const folderId = parseInt(req.params.folderId);
+
+  try {
+    await FilesService.createFile(req.file, folderId);
+    res.status(201).json({ message: 'Created Successfully' });
+  } catch (err) {
+    if (req.file) await fs.unlink(req.file.path);
+    throw err;
+  }
 }
 
-async function updateFolder(req, res) {
-  await FilesService.updateFolder(req.body);
+async function updateFile(req, res) {
+  const fileId = parseInt(req.params.fileId);
+  await FilesService.updateFile(req.body, fileId);
   res.json({ message: 'Updated Successfully' });
 }
 
-async function deleteFolder(req, res) {
-  const folderId = req.params.folderId;
-  await FilesService.deleteFolder(folderId);
+async function deleteFile(req, res) {
+  const fileId = parseInt(req.params.fileId);
+  const deletedFile = await FilesService.deleteFile(fileId);
+  await fs.unlink(path.resolve(deletedFile.path));
   res.json({
     message: 'Deleted Successfully',
   });
 }
-
-module.exports = { getFolders, getFolder, createFolder, updateFolder, deleteFolder };
+async function downloadFile(req, res) {
+  const file = await FilesService.getFile(req.params.fileId);
+  res.download(path.resolve(file.path, file.name));
+}
+module.exports = { getFiles, getFile, createFile, updateFile, deleteFile, downloadFile };
