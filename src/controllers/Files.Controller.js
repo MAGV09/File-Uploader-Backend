@@ -42,8 +42,24 @@ async function deleteFile(req, res) {
     message: 'Deleted Successfully',
   });
 }
+
 async function downloadFile(req, res) {
-  const file = await FilesService.getFile(req.params.fileId);
-  res.download(path.resolve(file.path, file.name));
+  const fileId = parseInt(req.params.fileId);
+  const file = await FilesService.getFile(fileId);
+  res.download(path.resolve(file.path), file.name);
 }
-module.exports = { getFiles, getFile, createFile, updateFile, deleteFile, downloadFile };
+
+async function deleteFiles(req, res) {
+  const folderId = parseInt(req.params.folderId);
+  await FilesService.deletedFiles(folderId);
+  res.json({ message: 'Deleted All files Successfully' });
+}
+module.exports = {
+  getFiles,
+  getFile,
+  createFile,
+  updateFile,
+  deleteFile,
+  downloadFile,
+  deleteFiles,
+};

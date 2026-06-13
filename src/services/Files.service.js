@@ -56,4 +56,19 @@ async function updateFile({ name }, fileId) {
   });
   return file;
 }
-module.exports = { getFiles, deleteFile, getFile, createFile, updateFile };
+
+async function deletedFiles(folderId) {
+  const file = await prisma.file.findFirst({
+    where: { folderId },
+  });
+
+  if (!file) {
+    throw createError(404, 'this folder has not file to delete');
+  }
+
+  const deletedFiles = await prisma.file.delete({
+    where: { folderId },
+  });
+  return deletedFiles;
+}
+module.exports = { getFiles, deleteFile, getFile, createFile, updateFile, deletedFiles };

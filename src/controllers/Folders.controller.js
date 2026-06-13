@@ -7,7 +7,7 @@ async function getFolders(req, res) {
 }
 
 async function getFolder(req, res) {
-  const folderId = req.params.folderId;
+  const folderId = parseInt(req.params.folderId);
   const folder = await FolderService.getFolder(folderId);
   res.json({
     folder,
@@ -15,19 +15,18 @@ async function getFolder(req, res) {
 }
 
 async function createFolder(req, res) {
-  const { name } = req.body;
-  const { id } = req.user;
-  await FolderService.createFolder(name, id);
+  await FolderService.createFolder(req.body, req.user.id);
   res.json({ message: 'Created Successfully' });
 }
 
 async function updateFolder(req, res) {
-  await FolderService.updateFolder(req.body);
+  const folderId = parseInt(req.params.folderId);
+  await FolderService.updateFolder(req.body, folderId);
   res.json({ message: 'Updated Successfully' });
 }
 
 async function deleteFolder(req, res) {
-  const folderId = req.params.folderId;
+  const folderId = parseInt(req.params.folderId);
   await FolderService.deleteFolder(folderId);
   res.json({
     message: 'Deleted Successfully',

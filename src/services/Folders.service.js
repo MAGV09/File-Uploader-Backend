@@ -1,7 +1,8 @@
 const prisma = require('../lib/prisma');
 const createError = require('http-errors');
-
-async function getAllFolders(userId) {
+const path = require('node:path');
+const fs = require('node:fs/promises');
+async function getFolders(userId) {
   const folders = await prisma.folder.findMany({
     where: { userId },
   });
@@ -24,9 +25,12 @@ async function deleteFolder(folderId) {
   const deletedFolder = await prisma.folder.delete({
     where: { id: folderId },
   });
+  const dirPath = path.resolve(`./public/uploads/${folder.userId}/${folderId}`);
+  await fs.rm(dirPath, { recursive: true, force: true });
+  return deletedFolder;
 }
 
-async function createFolder(name, userId) {
+async function createFolder({ name }, userId) {
   const folder = await prisma.folder.create({
     data: {
       name,
@@ -36,7 +40,7 @@ async function createFolder(name, userId) {
   return folder;
 }
 
-async function updateFolder({ folderId, name }) {
+async function updateFolder({ name }, folderId) {
   const folder = await prisma.folder.update({
     where: { id: folderId },
     data: {
@@ -45,4 +49,4 @@ async function updateFolder({ folderId, name }) {
   });
   return folder;
 }
-module.exports = { getAllFolders, deleteFolder, getFolder, createFolder, updateFolder };
+module.exports = { getFolders, deleteFolder, getFolder, createFolder, updateFolder };

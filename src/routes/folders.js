@@ -13,11 +13,10 @@ const filesRouter = require('./files');
 router.use(requireAuth);
 router.use('/:folderId/files', filesRouter);
 
+router.get('/', getFolders);
 router.get('/:folderId', getFolder);
 router.post('/', createFolder);
 router.delete('/:folderId', deleteFolder);
 router.put('/:folderId', updateFolder);
-// router.get('/:folderId/files');
-// router.delete('/:folderId/files');
 
 module.exports = router;
