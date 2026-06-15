@@ -2,6 +2,8 @@ const prisma = require('../lib/prisma');
 const createError = require('http-errors');
 const path = require('node:path');
 const fs = require('node:fs/promises');
+const { cloudinary } = require('../config/multer');
+
 async function getFolders(userId) {
   const folders = await prisma.folder.findMany({
     where: { userId },
@@ -22,12 +24,19 @@ async function getFolder(folderId) {
 
 async function deleteFolder(folderId) {
   const folder = await getFolder(folderId);
-  const deletedFolder = await prisma.folder.delete({
-    where: { id: folderId },
+  const files = await prisma.file.findMany({
+    where: { folderId },
+    select: { publicId: true, resourceType: true },
   });
-  const dirPath = path.resolve(`./public/uploads/${folder.userId}/${folderId}`);
-  await fs.rm(dirPath, { recursive: true, force: true });
-  return deletedFolder;
+
+  await prisma.folder.delete({ where: { id: folderId } }); // cascades files in DB
+
+  // delete all files from Cloudinary
+  for (const file of files) {
+    await cloudinary.uploader.destroy(file.publicId, { resource_type: file.resourceType });
+  }
+
+  return folder;
 }
 
 async function createFolder({ name }, userId) {

@@ -1,7 +1,7 @@
 const { Router } = require('express');
 const router = Router({ mergeParams: true });
 const { requireAuth } = require('../middleware/auth');
-const upload = require('../config/multer');
+const { upload } = require('../config/multer');
 const {
   getFiles,
   createFile,

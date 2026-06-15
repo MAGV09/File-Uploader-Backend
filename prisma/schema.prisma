@@ -28,7 +28,9 @@ model File {
   type String
   format String
   size Int
-  path String
+  url  String
+  publicId String
+  resourceType  String  @default("image")
   folder Folder @relation(fields: [folderId],references: [id], onDelete: Cascade)
   folderId Int
   @@map("files")

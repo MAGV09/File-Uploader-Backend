@@ -1,7 +1,7 @@
 const FilesService = require('../services/Files.service');
 const fs = require('node:fs/promises');
 const path = require('node:path');
-
+const { cloudinary } = require('../config/multer');
 async function getFiles(req, res) {
   const folderId = parseInt(req.params.folderId);
   const files = await FilesService.getFiles(folderId);
@@ -20,10 +20,14 @@ async function createFile(req, res) {
   const folderId = parseInt(req.params.folderId);
 
   try {
+    console.log(req.file);
     await FilesService.createFile(req.file, folderId);
     res.status(201).json({ message: 'Created Successfully' });
   } catch (err) {
-    if (req.file) await fs.unlink(req.file.path);
+    if (req.file)
+      await cloudinary.uploader.destroy(req.file.filename, {
+        resource_type: req.file.resource_type,
+      });
     throw err;
   }
 }
@@ -36,8 +40,7 @@ async function updateFile(req, res) {
 
 async function deleteFile(req, res) {
   const fileId = parseInt(req.params.fileId);
-  const deletedFile = await FilesService.deleteFile(fileId);
-  await fs.unlink(path.resolve(deletedFile.path));
+  await FilesService.deleteFile(fileId);
   res.json({
     message: 'Deleted Successfully',
   });
@@ -46,7 +49,7 @@ async function deleteFile(req, res) {
 async function downloadFile(req, res) {
   const fileId = parseInt(req.params.fileId);
   const file = await FilesService.getFile(fileId);
-  res.download(path.resolve(file.path), file.name);
+  res.json({ url: file.url });
 }
 
 async function deleteFiles(req, res) {

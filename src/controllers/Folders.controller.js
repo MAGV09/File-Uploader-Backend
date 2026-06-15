@@ -1,7 +1,7 @@
 const FolderService = require('../services/Folders.service');
 
 async function getFolders(req, res) {
-  const userId = req.params.id;
+  const userId = req.user.id;
   const folders = await FolderService.getFolders(userId);
   res.json({ folders });
 }
